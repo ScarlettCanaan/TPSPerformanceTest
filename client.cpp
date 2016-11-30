@@ -14,12 +14,16 @@
 const int MAX_THREAD_COUNT = 20;
 int datapacketCount = 0;
 
+char address[100];
+
 void* socketDispatch(void *arg);  
 void timer_print(struct ev_loop *loop, struct ev_timer *watcher, int revents);
 
+
 int main()  
 {  
-	char i = 0;
+    std::cin >> address;
+    char i = 0;
     for (int i = 0; i < MAX_THREAD_COUNT; ++i)
     {
     	pthread_t sniffer_thread;
@@ -48,7 +52,7 @@ void* socketDispatch(void *arg)
 	bzero(&addr, addr_len);
 	addr.sin_family = AF_INET;
 	addr.sin_port = htons(PORT);
-	addr.sin_addr.s_addr = inet_addr("127.0.0.1");
+	addr.sin_addr.s_addr = inet_addr(address);
 	if ((sd = socket(PF_INET, SOCK_STREAM, 0)) < 0)
 	{
 		std::cout << "socket faild" << std::endl;
