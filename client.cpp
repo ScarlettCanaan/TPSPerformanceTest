@@ -9,21 +9,28 @@
 #include <ctype.h>
 #include <stdio.h>
 #include <ev.h>
-#define PORT 54674
+//#define PORT 54674
 
-const int MAX_THREAD_COUNT = 20;
-int datapacketCount = 0;
+static int MAX_THREAD_COUNT = 20;
+static int datapacketCount = 0;
+static int PORT = 0;
 
-char address[100];
+char *address;
 
 void* socketDispatch(void *arg);  
 void timer_print(struct ev_loop *loop, struct ev_timer *watcher, int revents);
 
 
-int main()  
+int main(int argc, char* argv[])  
 {  
-    std::cin >> address;
-    char i = 0;
+	if (argc != 4)
+	{
+		std::cout << "invalid input" << std::endl;
+		return -1;
+	}
+	address = argv[1];
+	PORT = atoi(argv[2]);
+	MAX_THREAD_COUNT = atoi(argv[3]);
     for (int i = 0; i < MAX_THREAD_COUNT; ++i)
     {
     	pthread_t sniffer_thread;
@@ -38,7 +45,7 @@ int main()
     ev_timer_init(&timeout_w, timer_print, 3, 3);  
     ev_timer_start(loop, &timeout_w); 
     ev_run(loop, 0);
-    return 1;  
+    return 0;  
 }  
 
 void* socketDispatch(void *arg)
@@ -74,6 +81,7 @@ void* socketDispatch(void *arg)
 		else
 		{
 			++datapacketCount;
+			//usleep(30000);
 		}
 	}
 	close(sd);

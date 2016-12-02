@@ -4,7 +4,7 @@ CC = g++
 CFLAGS = -g -O
 server : $(OBJS_S)
 	$(CC) $^ -o $@ -luv
-$(OBJS_S) : uv_server.cpp
+$(OBJS_S) : uv_server_multi_echo.cpp
 	$(CC) $(CFLAGS) -c $< -o $@ -luv
 
 client : $(OBJS_C)

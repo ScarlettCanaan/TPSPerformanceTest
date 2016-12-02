@@ -13,6 +13,7 @@ const int feedBack = 0;
 
 static long packetCount = 0;
 static int PORT = 0;
+static int acceptCount = 0;
 //uv_loop_t *loop;
 
 void accept_cb(uv_stream_t *server, int status);  
@@ -85,6 +86,7 @@ void client_accept(void *entry)
 		PRINT_ERROR("error accepting connection %d", r);
 		uv_close((uv_handle_t*) client, NULL);
 	} else {
+		++acceptCount;
 		uv_read_start((uv_stream_t*) client, alloc_cb, read_cb);
 	}
 
@@ -133,7 +135,7 @@ void read_cb(uv_stream_t *client, ssize_t nread, const uv_buf_t *buf)
 
 void timer_print(uv_timer_t *handle)  
 {  
-	std::cout << packetCount << " datagram has received on least 3 seconds" << std::endl;
+	std::cout << packetCount << " datagram has received on least 3 seconds " << acceptCount << " accept established"<< std::endl;
     packetCount = 0;
     return ;  
 }  
