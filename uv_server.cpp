@@ -5,13 +5,14 @@
 #include <iostream>
 #include <assert.h>
 
-#define PORT 54674
+//#define PORT 54674
 
 const int BUFFER_SIZE = 2048;
 const int MAX_ALLOWED_CLIENT = 10240;
 const int feedBack = 0;
 
-long packetCount = 0;
+static long packetCount = 0;
+static int PORT = 0;
 uv_loop_t *loop;
 
 void accept_cb(uv_stream_t *server, int status);  
@@ -26,10 +27,14 @@ void timer_print(uv_timer_t *handle);
 
 inline void PRINT_ERROR(const char *msg, const int r);
 
-int main()  
+int main(int argc, char* argv[])  
 {
+	if (argc != 2) {
+		PRINT_ERROR("invalid args", argc);
+	}
+	PORT = atoi(argv[1]);
 	int r;
-	loop = uv_default_loop();
+	/*uv_loop_t */loop = uv_default_loop();
 	
     struct sockaddr_in addr;
 	r = uv_ip4_addr("0.0.0.0", PORT, &addr);
@@ -81,10 +86,12 @@ void alloc_cb(uv_handle_t *handle, size_t size, uv_buf_t *buf)
 void read_cb(uv_stream_t *client, ssize_t nread, const uv_buf_t *buf)
 { 
 	if (nread == UV_EOF) {
+		free(buf->base);
 		uv_close((uv_handle_t*) client, NULL);
 	}
 	else if (nread > 0) {
 		++packetCount;
+		free(buf->base);
 		if (feedBack) {
 		//	write_req_t *wrt;
 		// 	wrt = (write_req_t*) malloc(sizeof(write_req_t));
