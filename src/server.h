@@ -27,6 +27,7 @@ private:
 	server& operator = (const server &);
 	virtual ~server();
 	void server_establish(const char *_ip, int _port);
+public:
 	void accept_cb(uv_stream_t *server, int status);
 
 public:

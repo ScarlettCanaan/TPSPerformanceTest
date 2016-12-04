@@ -15,6 +15,7 @@ public:
 	void addThreadLoop(uv_stream_t *server);
 
 private:
+public:
 	void client_accept(void *entry);
 	void read_cb(uv_stream_t *client, ssize_t nread, const uv_buf_t *buf);
 	void write_cb(uv_write_t *req, int status);

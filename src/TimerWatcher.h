@@ -11,7 +11,8 @@ public:
 	TimerWatcher();
 	~TimerWatcher();
 	void addLoop(uv_loop_t* _loop, int _delay, int _repeat);
-private:
+//private:
+public:
 	void inline timer_cb(uv_timer_t *_handle);
 
 private:

@@ -10,10 +10,20 @@ void inline TimerWatcher::timer_cb(uv_timer_t *_handle)
 	return;
 }
 
+static void* callback(void *arg, uv_timer_t *_handle)
+{
+	((TimerWatcher*)arg)->timer_cb(_handle);
+	return NULL;
+}
+
 void TimerWatcher::addLoop(uv_loop_t* _loop, int _delay, int _repeat)
 {
 	uv_timer_init(_loop, &watcher);
-	uv_timer_start(&watcher, (uv_timer_cb)&TimerWatcher::timer_cb, _delay, _repeat);
+	typedef void* (*FUNC)();
+	//FUNC callback = (FUNC)&TimerWatcher::timer_cb;
+	//uv_timer_start(&watcher, (void*)callback, _delay, _repeat);
+	//uv_timer_start(&watcher, (uv_timer_cb)(&TimerWatcher::timer_cb), _delay, _repeat);
+	uv_timer_start(&watcher, (uv_timer_cb)callback, _delay, _repeat);
 }
 
 TimerWatcher::TimerWatcher()
