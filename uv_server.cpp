@@ -13,10 +13,12 @@ const int feedBack = 0;
 
 static long packetCount = 0;
 static int PORT = 0;
-uv_loop_t *loop;
+//uv_loop_t *loop;
 
 void accept_cb(uv_stream_t *server, int status);  
   
+void client_accept(void *args);
+
 void read_cb(uv_stream_t *client, ssize_t nread, const uv_buf_t *buf);
   
 void write_cb(uv_write_t *req, int status); 
@@ -34,7 +36,7 @@ int main(int argc, char* argv[])
 	}
 	PORT = atoi(argv[1]);
 	int r;
-	/*uv_loop_t */loop = uv_default_loop();
+	uv_loop_t *loop = uv_default_loop();
 	
     struct sockaddr_in addr;
 	r = uv_ip4_addr("0.0.0.0", PORT, &addr);
@@ -63,18 +65,31 @@ void accept_cb(uv_stream_t *server, int status)
 		PRINT_ERROR("connection error", status);
 	}
 
+	uv_thread_t client_thread;
+	r = uv_thread_create(&client_thread, client_accept, server);
+	if (r) PRINT_ERROR("thread_create error", r);
+
+	r = uv_thread_join(&client_thread);
+}
+
+//client_entry
+void client_accept(void *entry)
+{
+	int r;	
+	uv_loop_t *loop = uv_default_loop();
 	uv_tcp_t *client = (uv_tcp_t*) malloc(sizeof(uv_tcp_t));
 	uv_tcp_init(loop, client);
-	
-	r = uv_accept(server, (uv_stream_t*) client);
+
+	r = uv_accept( (uv_stream_t*) entry, (uv_stream_t*) client);
 	if (r) {
 		PRINT_ERROR("error accepting connection %d", r);
 		uv_close((uv_handle_t*) client, NULL);
 	} else {
 		uv_read_start((uv_stream_t*) client, alloc_cb, read_cb);
 	}
-}
 
+	uv_run(loop, UV_RUN_DEFAULT);
+}
 //malloc callback
 void alloc_cb(uv_handle_t *handle, size_t size, uv_buf_t *buf)
 {
