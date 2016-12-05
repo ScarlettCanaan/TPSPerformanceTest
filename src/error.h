@@ -5,6 +5,7 @@
 #include <iostream>
 #include <errno.h>
 #include <string.h>
+#include <uv.h>
 class error
 {
 public:

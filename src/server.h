@@ -13,7 +13,7 @@
 #include "TimerWatcher.h"
 #include "error.h"
 
-const int MAX_ALLOWED_CLIENT = 10240;
+const int MAX_INCOMING_QUEUE_SIZE = 10240;
 
 class server
 {
@@ -37,8 +37,9 @@ private:
 	uv_loop_t *loop;
 	uv_tcp_t _server;
 	TimerWatcher timer_watcher;
-	std::list<server_conn_instance> acceptList;
+	std::list<server_conn_instance*> acceptList;
 	int errorcode;
+	bool multithreading;
 };
 
 
