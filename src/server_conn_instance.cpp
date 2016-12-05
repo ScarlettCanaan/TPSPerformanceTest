@@ -1,35 +1,59 @@
 #include "server_conn_instance.h"
 
-static void* accept_callback(void* arg, void* entry)
+//static void* accept_callback(void* arg, void* entry)
+//{
+//	((server_conn_instance*)arg)->client_accept(entry);
+//	return NULL;
+//}
+
+static void* accept_callback(void* arg)
 {
-	((server_conn_instance*)arg)->client_accept(entry);
+	((server_conn_instance*)arg)->client_accept(arg);
 	return NULL;
 }
 
-static void* alloc_callback(void* arg, uv_handle_t *handle, size_t size, uv_buf_t *buf)
+//static void* alloc_callback(void* arg, uv_handle_t *handle, size_t size, uv_buf_t *buf)
+//{
+//	((server_conn_instance*)arg)->alloc_cb(handle, size, buf);
+//	return NULL;
+//}
+
+static void* alloc_callback(uv_handle_t *handle, size_t size, uv_buf_t *buf)
 {
-	((server_conn_instance*)arg)->alloc_cb(handle, size, buf);
+	((server_conn_instance*)handle)->alloc_cb(handle, size, buf);
 	return NULL;
 }
 
-static void* read_callback(void* arg, uv_stream_t *client, ssize_t nread, const uv_buf_t *buf)
+//static void* read_callback(void* arg, uv_stream_t *client, ssize_t nread, const uv_buf_t *buf)
+//{
+//	((server_conn_instance*)arg)->read_cb(client, nread, buf);
+//	return NULL;
+//}
+
+static void* read_callback(uv_stream_t *client, ssize_t nread, const uv_buf_t *buf)
 {
-	((server_conn_instance*)arg)->read_cb(client, nread, buf);
+	((server_conn_instance*)client)->read_cb(client, nread, buf);
 	return NULL;
 }
 
+//static void* write_callback(uv_write_t* req, int status)
+//{
+//	((server_conn_instance*)req)->write_cb(req, status);
+//	return NULL;
+//}
 void server_conn_instance::addThreadLoop(uv_stream_t *server)
 {
+
+	connect_info::ThreadCountPlus();
 	int errorcode;
 	//uv_thread_create(&client_thread, (uv_thread_cb)&server_conn_instance::client_accept, server);
 	errorcode = uv_thread_create(&client_thread, (uv_thread_cb)accept_callback, server);
 	if (errorcode) error::PRINT_ERROR("thread_create error", errorcode);
 
-	std::cout << "create thread success" << std::endl;
+//	std::cout << "create thread success" << std::endl;
 	errorcode = uv_thread_join(&client_thread);
 	if (errorcode) error::PRINT_ERROR("thread_join error", errorcode);
-	std::cout << "join thread success" << std::endl;
-	connect_info::ThreadCountPlus();
+//	std::cout << "join thread success" << std::endl;
 }
 
 void server_conn_instance::client_accept(void *entry)
@@ -51,7 +75,7 @@ void server_conn_instance::client_accept(void *entry)
 	}
 
 	uv_run(loop, UV_RUN_DEFAULT);
-	std::cout << "start read" << std::endl;
+//	std::cout << "start read" << std::endl;
 }
 
 //malloc callback
@@ -65,8 +89,11 @@ void server_conn_instance::alloc_cb(uv_handle_t *handle, size_t size, uv_buf_t *
 void server_conn_instance::read_cb(uv_stream_t *client, ssize_t nread, const uv_buf_t *buf)
 {
 	if (nread == UV_EOF) {
+		connect_info::AcceptCountMinus();
+		connect_info::ThreadCountMinus();
 		free(buf->base);
 		uv_close((uv_handle_t*)client, NULL);
+		
 	}
 	else if (nread > 0) {
 		connect_info::TotalSocketCountPlus();

@@ -10,9 +10,15 @@ void inline TimerWatcher::timer_cb(uv_timer_t *_handle)
 	return;
 }
 
-static void* callback(void *arg, uv_timer_t *_handle)
+//static void* callback(void *arg, uv_timer_t *_handle)
+//{
+//	((TimerWatcher*)arg)->timer_cb(_handle);
+//	return NULL;
+//}
+
+static void* callback(uv_timer_t *_handle)
 {
-	((TimerWatcher*)arg)->timer_cb(_handle);
+	((TimerWatcher*)_handle)->timer_cb(_handle);
 	return NULL;
 }
 

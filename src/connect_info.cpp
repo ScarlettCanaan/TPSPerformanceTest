@@ -31,7 +31,7 @@ long connect_info::setThreadCount(long _value)
 
 long connect_info::setTotalSocketCount(long _value)
 {
-	return (threadCount = _value);
+	return (totalSocketCount = _value);
 }
 
 long connect_info::AcceptCountPlus()
@@ -46,5 +46,20 @@ long connect_info::ThreadCountPlus()
 
 long connect_info::TotalSocketCountPlus()
 {
-	return (++threadCount);
+	return (++totalSocketCount);
+}
+
+long connect_info::AcceptCountMinus()
+{
+	return (--acceptCount);
+}
+
+long connect_info::ThreadCountMinus()
+{
+	return (--threadCount);
+}
+
+long connect_info::TotalSocketCountMinus()
+{
+	return (--totalSocketCount);
 }

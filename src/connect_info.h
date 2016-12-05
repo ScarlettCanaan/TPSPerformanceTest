@@ -17,6 +17,9 @@ public:
 	static long AcceptCountPlus();
 	static long ThreadCountPlus();
 	static long TotalSocketCountPlus();
+	static long AcceptCountMinus();
+	static long ThreadCountMinus();
+	static long TotalSocketCountMinus();
 private:
 	static long acceptCount;
 	static long threadCount;
