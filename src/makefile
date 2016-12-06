@@ -1,6 +1,6 @@
 OBJS_S = main.o error.o server_conn_instance.o server.o TimerWatcher.o connect_info.o
 OBJS_SMP = main_mp.o error.o multi_process_server.o TimerWatcher.o connect_info.o worker_instance.o
-OBJS_SS = sub_main.o
+OBJS_SS = sub_main.o error.o connect_info.o
 OBJS_C = client.o
 CC = g++
 CFLAGS = -Wall -ggdb -O -std=c++11
