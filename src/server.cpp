@@ -6,9 +6,6 @@
 //	return NULL;
 //}
 
-
-bool multithreading = true;
-
 static void* callback(void *arg, int status)
 {
 	((server*)arg)->accept_cb((uv_stream_t*)arg, status);
@@ -42,23 +39,11 @@ void server::accept_cb(uv_stream_t *server_stream, int status)
 	if (status < 0) {
 		error::PRINT_ERROR("connection error", status);
 	}
-	if (acceptList.size() >= MAX_INCOMING_QUEUE_SIZE) {
-		std::cout << "incoming connection queue overflow" << std::endl;
-		assert(0);
-		//error::PRINT_ERROR("thread count overflow", 0);
-	}
-
-	if (multithreading == true) {
-	
-		server_conn_instance client;
+	server_conn_instance client;
 	//	acceptList.push_back(&client);
-//		std::cout << "add 1 thread loop" << std::endl;
-		client.addThreadLoop((uv_stream_t*)server_stream);
-//		std::cout << "accept 1 client" << std::endl;
-	}
-	else {
-	
-	}
+	//	std::cout << "add 1 thread loop" << std::endl;
+	client.addThreadLoop((uv_stream_t*)server_stream);
+	//	std::cout << "accept 1 client" << std::endl;
 }
 
 void server::run(const char *_ip, int _port)

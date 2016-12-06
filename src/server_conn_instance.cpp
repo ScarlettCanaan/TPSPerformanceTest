@@ -60,15 +60,17 @@ void server_conn_instance::client_accept(void *entry)
 {
 	int errorcode;
 //	loop = uv_default_loop();
-	loop = (uv_loop_t*)malloc(sizeof(uv_loop_t));
+	loop = new uv_loop_t;
 	uv_loop_init(loop);
-	client = (uv_tcp_t*)malloc(sizeof(uv_tcp_t));
+	client = new uv_tcp_t;
 	uv_tcp_init(loop, client);
 
 	errorcode = uv_accept((uv_stream_t*)entry, (uv_stream_t*)client);
 	if (errorcode < 0) {
-		error::PRINT_ERROR("error accepting connection %d", errorcode);
 		uv_close((uv_handle_t*)client, NULL);
+		delete client;
+		delete loop;
+		error::PRINT_ERROR("error accepting connection", errorcode);
 	}
 	else {
 		connect_info::AcceptCountPlus();
@@ -95,7 +97,8 @@ void server_conn_instance::read_cb(uv_stream_t *client, ssize_t nread, const uv_
 		connect_info::ThreadCountMinus();
 		free(buf->base);
 		uv_close((uv_handle_t*)client, NULL);
-		delete client;		
+		delete client;
+		delete loop;
 	}
 	else if (nread > 0) {
 		connect_info::TotalSocketCountPlus();
