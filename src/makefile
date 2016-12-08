@@ -3,7 +3,7 @@ OBJS_SMP = main_mp.o error.o multi_process_server.o TimerWatcher.o connect_info.
 OBJS_SS = sub_main.o error.o connect_info.o
 OBJS_C = client.o
 CC = g++
-CFLAGS = -Wall -ggdb -O -std=c++11
+CFLAGS = -Wall -ggdb -std=c++11
 server : $(OBJS_S)
 	$(CC) $(CFLAGS) $^ -o $@ -luv
 server_mp : $(OBJS_SMP)
@@ -19,4 +19,4 @@ $(OBJS_C) : client.cpp
 clear  :
 	rm -f *.o; 
 	rm -f server rm client;
-
+	rm sub_main rm server_mp

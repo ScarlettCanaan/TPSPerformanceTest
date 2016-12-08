@@ -12,6 +12,7 @@ public:
 public:
 	void setupWorker(uv_loop_t *_loop, char *path);
 	void pipe_connection(uv_stream_t *_server);
+	int getPID();
 public:
 	worker_instance();
 	~worker_instance();
@@ -22,8 +23,8 @@ private:
 		uv_process_options_t opt;
 		uv_pipe_t pipe;
 	} info;
-	uv_stdio_container_t std_c;
-	uv_tcp_t *client;
+	uv_stdio_container_t std_c[3];
+	uv_pipe_t *client;
 	uv_loop_t *loop;
 	uv_buf_t buf;
 };

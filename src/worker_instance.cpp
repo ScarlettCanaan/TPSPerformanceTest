@@ -1,14 +1,19 @@
 #include "worker_instance.h"
 
+//int ct = 0;
 void worker_instance::pipe_connection(uv_stream_t *_server)
 {
-	client = new uv_tcp_t;
+	client = (uv_pipe_t *)malloc(sizeof(uv_pipe_t));
 	//client = (uv_tcp_t*)malloc(sizeof(uv_tcp_t));
-	uv_tcp_init(loop, client);
+	//std::cout << ct << std::endl;
+	uv_pipe_init(loop, client, 0);
+	//ct++;
+	//std::cout << ct << std::endl;
 	if (uv_accept(_server, (uv_stream_t *)client) == 0) {
 		uv_write_t *req = new uv_write_t;
 		buf = uv_buf_init("1", 1);
-		uv_write2(req, (uv_stream_t *)&info.pipe, &buf, 1, (uv_stream_t *)client, NULL);
+		int errorcode = uv_write2(req, (uv_stream_t *)&info.pipe, &buf, 1, (uv_stream_t *)client, NULL);
+		if (errorcode < 0) error::PRINT_ERROR("sending message error", errorcode);
 	} else {
 		uv_close((uv_handle_t *)client, NULL);
 		delete client;
@@ -38,18 +43,31 @@ void worker_instance::setupWorker(uv_loop_t *_loop, char *path)
 	//set handle to instance for callback encapsulation
 	info.process.data = this;
 
-	std_c.flags = (uv_stdio_flags)(uv_stdio_flags::UV_CREATE_PIPE | uv_stdio_flags::UV_READABLE_PIPE);
-	std_c.data.stream = (uv_stream_t *)(&info.pipe);
-	info.opt.stdio = &std_c;
-	info.opt.stdio_count = 1;
+	std_c[0].flags = (uv_stdio_flags)(uv_stdio_flags::UV_CREATE_PIPE | uv_stdio_flags::UV_READABLE_PIPE);
+	std_c[0].data.stream = (uv_stream_t *)(&info.pipe);
+	std_c[1].flags = UV_IGNORE;
+	std_c[2].flags = UV_INHERIT_FD;
+	std_c[2].data.fd = 2;
+	info.opt.stdio = std_c;
+	info.opt.stdio_count = 3;
 	info.opt.args = args;
 	info.opt.file = args[0];
 	info.opt.exit_cb = close_callback;
+	info.opt.flags = NULL;
+	info.opt.cwd = NULL;
+	info.opt.uid = NULL;
+	info.opt.env = NULL;
 	
-	uv_spawn(loop, &info.process, &info.opt);
+	int errorcode;
+	errorcode = uv_spawn(loop, &info.process, &info.opt);
+	if (errorcode < 0) error::PRINT_ERROR("spawning error", errorcode);
 	std::cout << "Started worker [" << info.process.pid << "]" << std::endl;
 }
 
+int worker_instance::getPID()
+{
+	return info.process.pid;
+}
 worker_instance::worker_instance()
 {
 }

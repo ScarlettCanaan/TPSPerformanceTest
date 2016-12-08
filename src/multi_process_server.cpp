@@ -1,14 +1,16 @@
 #include "multi_process_server.h"
+#include <linux/limits.h>
 
 //static void* callback(void* arg, uv_stream_t *_server, int status)
 //{
 //	((server*)arg)->accept_cb(_server, status);
 //	return NULL;
 //}
-char PATH[] = "./sub_main";
-static void* callback(void *arg, int status)
+char exepath[PATH_MAX];
+
+static void* callback(uv_stream_t *arg, int status)
 {
-	((multi_process_server*)arg)->accept_cb((uv_stream_t*)arg, status);
+	((multi_process_server*)(arg->data))->accept_cb((uv_stream_t*)arg, status);
 	return NULL;
 }
 
@@ -16,16 +18,22 @@ void multi_process_server::server_establish(const char *_ip, int _port)
 {	
 	int cpu_count;
 	uv_cpu_info_t *cpu_info;
-
+	
+	size_t size = PATH_MAX;
+	errorcode = uv_exepath(exepath, &size);
+	if (errorcode < 0) error::PRINT_ERROR("obtaining executable process path error", errorcode);	
+	strcpy(exepath + (strlen(exepath) - strlen("server_mp")), "sub_main");
 	loop = uv_default_loop();
 	uv_cpu_info(&cpu_info, &cpu_count);
+	cpu_count = 1;
 	max_worker_count = cpu_count;
 	uv_free_cpu_info(cpu_info, cpu_count);
 	cpu_count++;
 	workers = new worker_instance[cpu_count];
 	while (cpu_count--) {
-		workers[cpu_count].setupWorker(loop, PATH);
+		workers[cpu_count].setupWorker(loop, exepath);
 		connect_info::ThreadCountPlus();
+		std::cout << "Process [" << workers[cpu_count].getPID() << "] created." << std::endl;
 	}
 
 	struct sockaddr_in addr;
@@ -35,7 +43,7 @@ void multi_process_server::server_establish(const char *_ip, int _port)
 	uv_tcp_init(loop, &_server);
 	errorcode = uv_tcp_bind(&_server, (const struct sockaddr*) &addr, 0);
 	if (errorcode < 0) error::PRINT_ERROR("binding server to socket error", errorcode);
-
+	_server.data = this;
 	errorcode = uv_listen((uv_stream_t*)&_server, MAX_INCOMING_QUEUE_SIZE, (uv_connection_cb)callback);
 	if (errorcode < 0) error::PRINT_ERROR("listening for connections error", errorcode);
 
