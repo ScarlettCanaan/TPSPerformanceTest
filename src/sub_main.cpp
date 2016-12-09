@@ -23,9 +23,10 @@ char path[100];
 double cur_time;
 
 uv_timer_t watcher;
-int offset = 0;
-
+int tick = 0;
+long everagePacket = 0;
 int errorcode;
+
 void alloc_cb(uv_handle_t *handle, size_t suggested_size, uv_buf_t *buf)
 {
 	buf->base = (char*)malloc(suggested_size);
@@ -55,18 +56,23 @@ void timer_cb(uv_timer_t * handle)
 	int sc = connect_info::getTotalSocketCount();
 
 	fprintf(stderr, "subprocess %d received %d packet on least 3 seconds! (%d sockets per second)\n", getpid(), sc, (int)(sc / 3));
-	char c_sc[30];
-	sprintf(c_sc, "%d", sc);
-	buf->base = c_sc;
-	buf->len = sizeof(c_sc);
-//	errorcode = uv_fs_write(loop, &req, fd, buf, buf->len, -1, NULL);
-//	if (errorcode < 0) error::PRINT_ERROR("writing error", errorcode);
-//	offset += sizeof(info);
-//	uv_fs_t close_req;
-//	uv_fs_close(loop, &close_req, fd, NULL);
-//	fd = uv_fs_open(loop, &req, path, O_CREAT | O_RDWR, 0644, NULL);
+	//char c_sc[30];
+	//sprintf(c_sc, "%d", sc);
+	//buf->base = c_sc;
+	//buf->len = sizeof(c_sc);
+	//errorcode = uv_fs_write(loop, &req, fd, buf, buf->len, -1, NULL);
+	//if (errorcode < 0) error::PRINT_ERROR("writing error", errorcode);
+	//offset += sizeof(info);
+	//uv_fs_t close_req;
+	//uv_fs_close(loop, &close_req, fd, NULL);
+	//fd = uv_fs_open(loop, &req, path, O_CREAT | O_RDWR, 0644, NULL);
 	connect_info::setTotalSocketCount(0);
+	everagePacket += sc;
 	delete buf;
+	if (5 == ++tick)
+	{
+		//write packetCount to log file	
+	}
 }
 
 void connect_cb(uv_stream_t *queue, ssize_t nread, const uv_buf_t *buf)
@@ -96,8 +102,6 @@ void connect_cb(uv_stream_t *queue, ssize_t nread, const uv_buf_t *buf)
 	}
 	fprintf(stderr, "Worker %d: Accepted clinet fd %d\n", getpid(), client->io_watcher.fd);
 	uv_read_start((uv_stream_t *)client, alloc_cb, read_cb);
-
-
 }
 
 int main()
