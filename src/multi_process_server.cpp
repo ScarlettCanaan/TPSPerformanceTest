@@ -25,10 +25,8 @@ void multi_process_server::server_establish(const char *_ip, int _port)
 	strcpy(exepath + (strlen(exepath) - strlen("server_mp")), "sub_main");
 	loop = uv_default_loop();
 	uv_cpu_info(&cpu_info, &cpu_count);
-	cpu_count = 1;
 	max_worker_count = cpu_count;
 	uv_free_cpu_info(cpu_info, cpu_count);
-	cpu_count++;
 	workers = new worker_instance[cpu_count];
 	while (cpu_count--) {
 		workers[cpu_count].setupWorker(loop, exepath);

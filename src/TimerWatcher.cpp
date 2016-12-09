@@ -2,11 +2,11 @@
 
 void inline TimerWatcher::timer_cb(uv_timer_t *_handle)
 {
-	std::cout << "##############Server##################" << std::endl;
-	std::cout << "[" << connect_info::getTotalSocketCount() << "] datagram has received" << std::endl;
-	std::cout << "[" << connect_info::getAcceptCount() << "] tcp accept established." << std::endl;
-	std::cout << "[" << connect_info::getThreadCount() << "] thread running			on least 3 seconds." << std::endl;
-	connect_info::setTotalSocketCount(0);
+//	std::cout << "##############Server##################" << std::endl;
+//	std::cout << "[" << connect_info::getTotalSocketCount() << "] datagram has received" << std::endl;
+//	std::cout << "[" << connect_info::getAcceptCount() << "] tcp accept established." << std::endl;
+//	std::cout << "[" << connect_info::getThreadCount() << "] thread running			on least 3 seconds." << std::endl;
+//	connect_info::setTotalSocketCount(0);
 	return;
 }
 

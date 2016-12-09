@@ -1,14 +1,16 @@
 #include "worker_instance.h"
+#define IPC		1
+#define NOIPC	0
 
-//int ct = 0;
+#define STDIN	0
+#define STDOUT	1
+#define STDERR	2
+
 void worker_instance::pipe_connection(uv_stream_t *_server)
 {
-	client = (uv_pipe_t *)malloc(sizeof(uv_pipe_t));
-	//client = (uv_tcp_t*)malloc(sizeof(uv_tcp_t));
-	//std::cout << ct << std::endl;
-	uv_pipe_init(loop, client, 0);
-	//ct++;
-	//std::cout << ct << std::endl;
+	//client = (uv_pipe_t *)malloc(sizeof(uv_pipe_t));
+	client = (uv_tcp_t*)malloc(sizeof(uv_tcp_t));
+	uv_tcp_init(loop, client);
 	if (uv_accept(_server, (uv_stream_t *)client) == 0) {
 		uv_write_t *req = new uv_write_t;
 		buf = uv_buf_init("1", 1);
@@ -18,6 +20,10 @@ void worker_instance::pipe_connection(uv_stream_t *_server)
 		uv_close((uv_handle_t *)client, NULL);
 		delete client;
 	}
+	//uv_pipe_init(loop, client, 1);
+	//int errorcode = uv_pipe_bind(client, "echo");
+	//if (errorcode < 0) error::PRINT_ERROR("bingding echo error", errorcode);
+	
 }
 
 static void close_callback(uv_process_t *_process, int64_t exit_status, int term_signal)

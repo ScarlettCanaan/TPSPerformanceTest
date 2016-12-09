@@ -24,7 +24,7 @@ private:
 		uv_pipe_t pipe;
 	} info;
 	uv_stdio_container_t std_c[3];
-	uv_pipe_t *client;
+	uv_tcp_t *client;
 	uv_loop_t *loop;
 	uv_buf_t buf;
 };
