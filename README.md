@@ -14,28 +14,28 @@ Based on libuv build a server support multithreading and multiprocess(use comman
 
 You can either [Install TPSPerformanceTest via pre-built binary package](https://github.com/Scarlett/TPSPerformanceTest/bin) or [build it from source](https://github.com/ScarlettCanaan/TPSPerformance/src).
 
--    for source installer:
-
-        running following command on Linux:
-<pre><code>
-$make server
-</code></pre>
-        to compile server executable file
-<pre><code>
-$make client
-</code></pre>
-        to compile client executable file
-<pre><code>
-$make clean
-</code></pre>
-        to uninstall all exexutable file
+**for source installer:**
+        
+***running following command on Linux:***
+        
+    Using
+            
+`$make server` to compile server executable file 
+        
+    Using 
+ 
+`$make client` to compile client executable file
+        
+    Using 
+            
+`$make clean`  to uninstall all exexutable file
 
 
 #Running Usage
 
 -   Basic server command line usage:
 
-    server port [[-t | -p] [count]]
+    server port [ [-t | -p] [count] ]
 
 For more information about the various command line options use `server -h` 
 
@@ -48,8 +48,8 @@ For more information about the various command line options use `server -h`
     The code in this repository is licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
     You may obtain a copy of the License at
-
-      [Apache License](http://www.apache.org/licenses/LICENSE-2.0)
+    
+- [Apache License](http://www.apache.org/licenses/LICENSE-2.0)
 
     Unless required by applicable law or agreed to in writing, software
     distributed under the License is distributed on an "AS IS" BASIS,
