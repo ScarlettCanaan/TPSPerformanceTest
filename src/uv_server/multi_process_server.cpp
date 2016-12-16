@@ -1,19 +1,17 @@
 #include "multi_process_server.h"
 #include <linux/limits.h>
 
-//static void* callback(void* arg, uv_stream_t *_server, int status)
-//{
-//	((server*)arg)->accept_cb(_server, status);
-//	return NULL;
-//}
+//specify load process path
 char exepath[PATH_MAX];
 
+//static callback for socket connectino accept
 static void* callback(uv_stream_t *arg, int status)
 {
 	((multi_process_server*)(arg->data))->accept_cb((uv_stream_t*)arg, status);
 	return NULL;
 }
 
+//initial server socket monitor and establish subprocess
 void multi_process_server::server_establish(const char *_ip, int _port)
 {	
 	int cpu_count;
@@ -58,6 +56,7 @@ void multi_process_server::accept_cb(uv_stream_t *server_stream, int status)
 	connect_info::AcceptCountPlus();
 }
 
+//outer interface to invoke server
 void multi_process_server::run(const char *_ip, int _port)
 {
 	connect_info::setAcceptCount(0);
@@ -67,6 +66,7 @@ void multi_process_server::run(const char *_ip, int _port)
 	uv_run(loop, UV_RUN_DEFAULT);
 }
 
+//SINGLETON instance
 multi_process_server* multi_process_server::getInstance()
 {
 	static multi_process_server SINGLETON;

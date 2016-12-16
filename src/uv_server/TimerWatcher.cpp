@@ -2,19 +2,13 @@
 
 void inline TimerWatcher::timer_cb(uv_timer_t *_handle)
 {
-//	std::cout << "##############Server##################" << std::endl;
-//	std::cout << "[" << connect_info::getTotalSocketCount() << "] datagram has received" << std::endl;
-//	std::cout << "[" << connect_info::getAcceptCount() << "] tcp accept established." << std::endl;
-//	std::cout << "[" << connect_info::getThreadCount() << "] thread running			on least 3 seconds." << std::endl;
-//	connect_info::setTotalSocketCount(0);
+    std::cout << "##############Server##################" << std::endl;
+    std::cout << "[" << connect_info::getTotalSocketCount() << "] datagram has received" << std::endl;
+    std::cout << "[" << connect_info::getAcceptCount() << "] tcp accept established." << std::endl;
+    std::cout << "[" << connect_info::getThreadCount() << "] thread running			on least 3 seconds." << std::endl;
+    connect_info::setTotalSocketCount(0);
 	return;
 }
-
-//static void* callback(void *arg, uv_timer_t *_handle)
-//{
-//	((TimerWatcher*)arg)->timer_cb(_handle);
-//	return NULL;
-//}
 
 static void* callback(uv_timer_t *_handle)
 {
@@ -25,10 +19,6 @@ static void* callback(uv_timer_t *_handle)
 void TimerWatcher::addLoop(uv_loop_t* _loop, int _delay, int _repeat)
 {
 	uv_timer_init(_loop, &watcher);
-	typedef void* (*FUNC)();
-	//FUNC callback = (FUNC)&TimerWatcher::timer_cb;
-	//uv_timer_start(&watcher, (void*)callback, _delay, _repeat);
-	//uv_timer_start(&watcher, (uv_timer_cb)(&TimerWatcher::timer_cb), _delay, _repeat);
 	uv_timer_start(&watcher, (uv_timer_cb)callback, _delay, _repeat);
 }
 

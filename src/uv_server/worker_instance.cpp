@@ -8,7 +8,6 @@
 
 void worker_instance::pipe_connection(uv_stream_t *_server)
 {
-	//client = (uv_pipe_t *)malloc(sizeof(uv_pipe_t));
 	client = (uv_tcp_t*)malloc(sizeof(uv_tcp_t));
 	uv_tcp_init(loop, client);
 	if (uv_accept(_server, (uv_stream_t *)client) == 0) {
@@ -20,9 +19,6 @@ void worker_instance::pipe_connection(uv_stream_t *_server)
 		uv_close((uv_handle_t *)client, NULL);
 		delete client;
 	}
-	//uv_pipe_init(loop, client, 1);
-	//int errorcode = uv_pipe_bind(client, "echo");
-	//if (errorcode < 0) error::PRINT_ERROR("bingding echo error", errorcode);
 	
 }
 
