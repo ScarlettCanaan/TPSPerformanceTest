@@ -23,6 +23,11 @@ int parse(char *ch) {
 
 int main(int argc, char* argv[])
 {
+    if (argc == 2 || argv[1] == "-h") {
+        Usage();
+        return 0;
+    }
+
     if (argc < 2 || argc > 4) {
         Usage();
         return -1;
