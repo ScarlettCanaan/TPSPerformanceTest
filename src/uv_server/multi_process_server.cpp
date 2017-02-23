@@ -1,8 +1,14 @@
 #include "multi_process_server.h"
+#ifndef WIN32
 #include <linux/limits.h>
+#endif // !WIN32
 
 //specify load process path
+#ifdef WIN32
+char exepath[MAX_PATH];
+#else
 char exepath[PATH_MAX];
+#endif // !WIN32
 
 //static callback for socket connectino accept
 static void* callback(uv_stream_t *arg, int status)
@@ -17,9 +23,13 @@ void multi_process_server::server_establish(const char *_ip, int _port)
 	int cpu_count;
 	uv_cpu_info_t *cpu_info;
 	
+#ifdef WIN32
+	size_t size = MAX_PATH;
+#else
 	size_t size = PATH_MAX;
+#endif // !WIN32
 	errorcode = uv_exepath(exepath, &size);
-	if (errorcode < 0) error::PRINT_ERROR("obtaining executable process path error", errorcode);	
+	if (errorcode < 0) error::PRINT_ERROR("obtaining executable process path error", errorcode);
 	strcpy(exepath + (strlen(exepath) - strlen("server_mp")), "sub_main");
 	loop = uv_default_loop();
 	uv_cpu_info(&cpu_info, &cpu_count);
